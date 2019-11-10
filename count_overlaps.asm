@@ -3,7 +3,7 @@ state:
 .byte 6
 .byte 10
 .asciiz "....................OOO.......OOOO.....OOOOOO....OOOOOOO..OO"  # not null-terminated during grading!
-row: .word 4  # this is test case #3 in the PDF
+row: .word 2  # this is test case #3 in the PDF
 col: .word 0
 piece:
 .byte 2

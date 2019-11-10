@@ -3,8 +3,8 @@ struct:
 .byte 6
 .byte 10
 .asciiz "....................OOO.......OOOO.....OOOOOO....OOOOOOO..OO"  # not null-terminated during grading!
-row: .word 3
-col: .word 4
+row: .word 5
+col: .word 8
 
 .text
 main:

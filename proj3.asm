@@ -233,7 +233,7 @@ set_slot:
 	lw $s6, 24($sp)
 	lw $s7, 28($sp)
 	addi $sp, $sp, 32	
-    jr $ra
+    	jr $ra
 
 rotate:
 	addi $sp, $sp, -56
@@ -445,10 +445,11 @@ rotate:
 		lw $t3, 44($sp)
 		lw $t5, 48($sp)
 		addi $sp, $sp, 52
-	    jr $ra
+	    	jr $ra
+		
 
 count_overlaps:
-	addi $sp, $sp, -56
+	addi $sp, $sp, -64
 	sw $s0, ($sp)
 	sw $s1, 4($sp)
 	sw $s2, 8($sp)
@@ -463,22 +464,81 @@ count_overlaps:
 	sw $t3, 44($sp)
 	sw $t4, 48($sp)
 	sw $t5, 52($sp)
+	sw $t6, 56($sp)
+	sw $t7, 60($sp)
 	
-	move $s0, $a0
-	move $s1, $a1
-	move $s2, $a2
-	move $s3, $a3
+	move $s0, $a0							# $s0 = state
+	move $s1, $a1							# $s1 = row
+	move $s2, $a2							# $s2 = column
+	move $s3, $a3							# $s3 = piece
 	# ====== Check for Errors ====== #
 	lb $s4, ($s0)							# $s4 = gamestate row
 	addi $s0, $s0, 1						
 	lb $s5, ($s0)							# $s5 = gamestate column
 	addi $s0, $s0, -1						# Pointer is back at the beginning
-	blt $s1, $s4, count_overlaps_error
-	blt $s2, $s5, count_overlaps_error
+	lb $s6, ($s3)							# Piece row	
+	addi $s6, $s6, -1	
+	addi $s3, $s3, 1						# Move Pointer up
+	lb $s7, ($s3)							# Piece column
+	addi $s7, $s7, -1
+	addi $s3, $s3, -1						# Move pointer back
+	add $t0, $s1, $s6						# Row + 1 to see if OOB
+	add $t1, $s2, $s7						# Col + 2 to see if OOB
+	bge $t0, $s4, count_overlaps_error
+	bge $t1, $s5, count_overlaps_error
 	bltz $s1, count_overlaps_error
 	bltz $s2, count_overlaps_error
+	li $t0, 0
+	li $t1, 1
+	li $t4, 0							# $v0 counter
+	li $t7, 79
 	
+	lb $s6, ($s3)							# Piece row
+	addi $s3, $s3, 1
+	lb $s7, ($s3)							# Piece column
+	addi $s3, $s3, 1	
 	
+	move $t0, $s1
+	move $t1, $s2
+	add $t2, $t0, $s6						# Checker for $t0
+	add $t3, $t1, $s7						# Checker for $t1
+	count_overlaps_outer_loop:
+		beq $t0, $t2, count_overlaps_continue
+		move $t1, $s2
+		count_overlaps_inner_loop:
+			bne $t1, $t3, count_overlaps_inner_loop_continue
+			addi $t0, $t0, 1
+			j count_overlaps_outer_loop
+			count_overlaps_inner_loop_continue:
+			# ===== USE GET SLOT FOR GAME STATE ===== #
+				addi $sp, $sp, -16
+				sw $a0, 64($sp)
+				sw $a1, 68($sp)
+				sw $a2, 72($sp)
+				sw $ra, 76($sp) 
+				move $a0, $s0
+				move $a1, $t0
+				move $a2, $t1
+				jal get_slot
+				move $t5, $v0			# Get char from state
+				lw $a0, 64($sp)
+				lw $a1, 68($sp)
+				lw $a2, 72($sp)
+				lw $ra, 76($sp)
+				addi $sp, $sp, 16
+				lb $t6, ($s3)			# Load from piece
+					
+				bne $t5, $t7, count_overlaps_inner_loop_not_o
+				bne $t5, $t6, count_overlaps_inner_loop_not_o
+				addi $t4, $t4, 1
+			count_overlaps_inner_loop_not_o:
+			addi $t1, $t1, 1
+			addi $s3, $s3, 1
+			j count_overlaps_inner_loop
+										
+	count_overlaps_continue:
+		move $v0, $t4
+		j count_overlaps_done
 	count_overlaps_error:
 		li $v0, -1
 		j count_overlaps_done
@@ -497,7 +557,9 @@ count_overlaps:
 		lw $t3, 44($sp)
 		lw $t4, 48($sp)
 		lw $t5, 52($sp)
-		addi $sp, $sp, 56
+		lw $t6, 56($sp)
+		lw $t7, 60($sp)
+		addi $sp, $sp, 64
 		jr $ra
 
 drop_piece:
