@@ -492,12 +492,10 @@ count_overlaps:
 	li $t1, 1
 	li $t4, 0							# $v0 counter
 	li $t7, 79
-	
 	lb $s6, ($s3)							# Piece row
 	addi $s3, $s3, 1
 	lb $s7, ($s3)							# Piece column
 	addi $s3, $s3, 1	
-	
 	move $t0, $s1
 	move $t1, $s2
 	add $t2, $t0, $s6						# Checker for $t0
@@ -527,15 +525,13 @@ count_overlaps:
 				lw $ra, 76($sp)
 				addi $sp, $sp, 16
 				lb $t6, ($s3)			# Load from piece
-					
 				bne $t5, $t7, count_overlaps_inner_loop_not_o
 				bne $t5, $t6, count_overlaps_inner_loop_not_o
 				addi $t4, $t4, 1
 			count_overlaps_inner_loop_not_o:
 			addi $t1, $t1, 1
 			addi $s3, $s3, 1
-			j count_overlaps_inner_loop
-										
+			j count_overlaps_inner_loop								
 	count_overlaps_continue:
 		move $v0, $t4
 		j count_overlaps_done
@@ -563,6 +559,47 @@ count_overlaps:
 		jr $ra
 
 drop_piece:
+	addi $sp, $sp, -64	
+	sw $s1, 4($sp)
+	sw $s2, 8($sp)
+	sw $s3, 12($sp)
+	sw $s4, 16($sp)
+	sw $s5, 20($sp)
+	sw $s6, 24($sp)
+	sw $s7, 28($sp)
+	sw $t0, 32($sp)
+	sw $t1, 36($sp)
+	sw $t2, 40($sp)
+	sw $t3, 44($sp)
+	sw $t4, 48($sp)
+	sw $t5, 52($sp)
+	sw $t6, 56($sp)
+	sw $t7, 60($sp)
+	sw $s0, 64($sp)
+	
+	move $s0, $a0
+	move $s1, $a1
+	move $s2, $a2
+	move $s3, $a3
+	lw $s4, ($sp)
+	
+	lw $s1, 4($sp)
+	lw $s2, 8($sp)
+	lw $s3, 12($sp)
+	lw $s4, 16($sp)
+	lw $s5, 20($sp)
+	lw $s6, 24($sp)
+	lw $s7, 28($sp)
+	lw $t0, 32($sp)
+	lw $t1, 36($sp)
+	lw $t2, 40($sp)
+	lw $t3, 44($sp)
+	lw $t4, 48($sp)
+	lw $t5, 52($sp)
+	lw $t6, 56($sp)
+	lw $t7, 60($sp)
+	lw $s0, 64($sp)
+	addi $sp, $sp, 64
 	jr $ra
 
 check_row_clear:

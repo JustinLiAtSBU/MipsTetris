@@ -1,10 +1,10 @@
 .data
 struct:
-.byte 6
-.byte 10
+.byte 2
+.byte 2
 .asciiz "....................OOO.......OOOO.....OOOOOO....OOOOOOO..OO"  # not null-terminated during grading!
-row: .word 5
-col: .word 8
+row: .word 0
+col: .word 2
 
 .text
 main:

@@ -1,10 +1,10 @@
 .data
 piece:
-.byte 2
 .byte 3
-.asciiz "OOO.O."  # not null-terminated during grading!
-rotation: .word 1
-rotated_piece: .asciiz "????????"   # not null-terminated during grading!
+.byte 2
+.asciiz ".O.OOO"  # not null-terminated during grading!
+rotation: .word -5
+rotated_piece: .asciiz "GB??????"   # not null-terminated during grading!
 
 .text
 main:
